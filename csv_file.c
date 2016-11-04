@@ -13,8 +13,9 @@ void qtdColuna(TABELA * tab, unsigned short * lin, unsigned short * col);
 
 /** O objectivo desta funcao 'e encontrar e
 	fragmentar valores que vao em cada celula **/
-void leAquivoCSV(TABELA * tab, char* endereco){
+void leArquivoCSV(TABELA * tab, char* endereco){
 	FILE * entr = retornaArquivo(endereco, "r");
+
 
 	// se estamos lidando com valores entre ""
 	char aspas = 0;
@@ -87,10 +88,6 @@ void leAquivoCSV(TABELA * tab, char* endereco){
 	fclose(entr);
 }
 
-void escreveAquivoCSV(TABELA * tab, char* endereco){
-	FILE * entr = retornaArquivo(endereco, "w");
-}
-
 //* ===================================== *//
 
 void proxCelula(TABELA * tab, unsigned short * lin, unsigned short * col){
@@ -115,9 +112,8 @@ void qtdColuna(TABELA * tab, unsigned short * lin, unsigned short * col){
 FILE* retornaArquivo(char *endereco, char *argumento){
 	FILE * arq;
 	arq = fopen(endereco, argumento);
-
 	if (!arq){
-		perror("Erro ao abrir arquivo, checar nome correto");
+		perror("Erro ao abrir arquivo");
 		exit(1);
 	}
 	

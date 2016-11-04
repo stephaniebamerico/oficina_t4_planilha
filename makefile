@@ -13,7 +13,7 @@ purge: clean
 # ----
 
 myxcel: myxcel.o table.o csv_file.o
-	gcc -o myxcel $(CFLAGS) csv_file.o table.o myxcel.o
+	gcc -o myxcel $(CFLAGS) csv_file.o table.o myxcel.o -lncurses
 
 # ----
 myxcel.o: myxcel.c

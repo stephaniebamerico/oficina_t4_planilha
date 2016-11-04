@@ -7,7 +7,7 @@
 
 #define TAMVALOR_MAX 255
 
-void leAquivoCSV(TABELA * tab, char* endereco);
+void leArquivoCSV(TABELA * tab, char* endereco);
 void escreveAquivoCSV(TABELA * tab, char* endereco);
 
 #endif
