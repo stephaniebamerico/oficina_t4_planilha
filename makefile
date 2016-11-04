@@ -2,25 +2,25 @@
 
 CFLAGS = -Wall -g
 
-all: main
+all: myxcel
 
 clean:
 	-rm *.o
 
 purge: clean
-	-rm main
+	-rm myxcel
 
 # ----
 
-main: main.o tabela.o manipula_tabela.o
-	gcc -o main $(CFLAGS) manipula_tabela.o tabela.o main.o
+myxcel: myxcel.o table.o csv_file.o
+	gcc -o myxcel $(CFLAGS) csv_file.o table.o myxcel.o
 
 # ----
-main.o: main.c
-	gcc -c main.c $(CFLAGS)
+myxcel.o: myxcel.c
+	gcc -c myxcel.c $(CFLAGS)
 
-tabela.o: tabela.c
-	gcc -c tabela.c $(CFLAGS)
+table.o: table.c
+	gcc -c table.c $(CFLAGS)
 
-manipula_tabela.o: manipula_tabela.c
-	gcc -c manipula_tabela.c $(CFLAGS)
+manipula_tabela.o: csv_file.c
+	gcc -c csv_file.c $(CFLAGS)
