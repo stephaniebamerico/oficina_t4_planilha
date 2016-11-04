@@ -11,11 +11,15 @@ void insereTabela(TABELA * tab, unsigned char *valor, unsigned short lin, unsign
 	// se a celula ja estava alocada, desaloca
 	if(tab->celula[lin][col].valor != NULL){
 		free(tab->celula[lin][col].valor);
-		//free(tab->celula[lin][col]);
 	}
 
 	// aloca nova celula
-	tab->celula[lin][col].valor = (char *) malloc(sizeof(char *));
+	tab->celula[lin][col].valor = (char *) malloc(255*sizeof(char));
+
+	if (!tab){
+		perror("Erro ao alocar memoria");
+		exit(1);
+	}
 	
 	// define o tipo de valor
 	unsigned short tipo = FRASE;
@@ -42,18 +46,3 @@ void insereTabela(TABELA * tab, unsigned char *valor, unsigned short lin, unsign
 	strcpy(tab->celula[lin][col].valor, (char *) valor);
 	//printf("%s\n", tab->celula[lin][col].valor);
 }
-
-/*long calculaFormula(TABELA * tab, unsigned short lin, unsigned short col){
-	if(tab->celula[lin][col].tipo != FORMULA)
-		perror("A expressao indicada nao e uma formula");
-	else{
-		unsigned int op;
-		int n1, n2;
-		for(int i = 1; i < strlen(tabela.celula[i][j].valor && ); ++i){
-			
-			
-		}
-	}
-
-	return 0;
-}*/
