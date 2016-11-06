@@ -5,6 +5,21 @@
 #include <stdlib.h>
 #include <string.h>
 
+void alocaTabela(TABELA * t){
+	t->celula = (CELULA **) malloc ((LIN_MAX+1)*sizeof(CELULA *));
+
+	if (t->celula == NULL){
+		perror("Erro ao alocar memoria");
+		exit(1);
+	}
+
+	for (int i = 0; i < LIN_MAX+1; ++i){
+		t->celula[i] = (CELULA *) malloc ((COL_MAX+1)*sizeof(CELULA));
+	}
+
+	t->tlin = t->tcol = 0;
+}
+
 /** O objectivo desta funcao 'e receber os valores da celula,
 	determinar o tipo do valor e inseri-los na tabela **/
 void insereTabela(TABELA * tab, unsigned char *valor, unsigned short lin, unsigned short col){
@@ -14,9 +29,9 @@ void insereTabela(TABELA * tab, unsigned char *valor, unsigned short lin, unsign
 	}
 
 	// aloca nova celula
-	tab->celula[lin][col].valor = (char *) malloc(255*sizeof(char));
+	tab->celula[lin][col].valor = (char *) malloc(300);
 
-	if (!tab){
+	if (tab->celula[lin][col].valor == NULL){
 		perror("Erro ao alocar memoria");
 		exit(1);
 	}
@@ -44,5 +59,22 @@ void insereTabela(TABELA * tab, unsigned char *valor, unsigned short lin, unsign
 	// guarda o tipo e o valor na celula
 	tab->celula[lin][col].tipo = tipo;
 	strcpy(tab->celula[lin][col].valor, (char *) valor);
-	//printf("%s\n", tab->celula[lin][col].valor);
+
+	if(tab->tlin < lin)
+		tab->tlin = LIN_MAX;
+	if(tab->tcol < col)
+		tab->tcol = col;
+}
+
+void limpaValores(TABELA * tab){
+	for(int i = 0; i <= tab->tlin; ++i){
+		for(int j = 0; j <= tab->tcol; ++j){
+			if(tab->celula[i][j].valor != NULL){
+				free(tab->celula[i][j].valor);
+				tab->celula[i][j].valor = NULL;
+			}
+		}
+	}
+
+	tab->tlin = tab->tcol = 0;
 }

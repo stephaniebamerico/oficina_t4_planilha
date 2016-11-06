@@ -1,21 +1,26 @@
 /*== Stephanie Briere Americo ==*/
-
+#include "csv_file.h"
 #include "table.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define TAMVALOR_MAX 255
-
 FILE* retornaArquivo(char *endereco, char *argumento);
 void proxCelula(TABELA * tab, unsigned short * lin, unsigned short * col);
 void qtdColuna(TABELA * tab, unsigned short * lin, unsigned short * col);
 
+// Verifica se o arquivo e valido
+int arquivoValido(char* endereco){
+	FILE * arq = fopen(endereco, "r");	
+	if(arq)
+		return 1;
+	return 0;
+}
+
 /** O objectivo desta funcao 'e encontrar e
 	fragmentar valores que vao em cada celula **/
 void leArquivoCSV(TABELA * tab, char* endereco){
-	FILE * entr = retornaArquivo(endereco, "r");
-
+	FILE * arq = retornaArquivo(endereco, "r");
 
 	// se estamos lidando com valores entre ""
 	char aspas = 0;
@@ -24,9 +29,9 @@ void leArquivoCSV(TABELA * tab, char* endereco){
 	// c - valor lido, valor - valor da celula
 	unsigned char c, valor[TAMVALOR_MAX], tamv = 0;
 	// a tabela começa com 0 colunas
-	tab->tcol = 0;
+	tab->tlin = tab->tcol = 0;
 
-	while((fscanf(entr, "%c", &c) > 0) && (lin < LIN_MAX)){
+	while((fscanf(arq, "%c", &c) > 0) && (lin < LIN_MAX)){
 		switch(c){
 			case '"':
 				// começa/termina um valor entre ""
@@ -85,7 +90,27 @@ void leArquivoCSV(TABELA * tab, char* endereco){
 
 	tab->tlin = lin;
 
-	fclose(entr);
+	fclose(arq);
+}
+
+void escreveAquivoCSV(TABELA * tab, char* endereco){
+	FILE * arq = retornaArquivo(endereco, "w");
+
+	for (int i = 0; i <= tab->tlin; ++i){
+		for (int j = 0; j < tab->tcol; ++j){
+			if(tab->celula[i][j].valor != NULL)
+				fprintf(arq, "\"%s\",", tab->celula[i][j].valor);
+			else
+				fprintf(arq, ",");
+		}
+		if(tab->celula[i][tab->tcol].valor != NULL)
+				fprintf(arq, "\"%s\",", tab->celula[i][tab->tcol].valor);
+			else
+				fprintf(arq, ",");
+		fprintf(arq, "\n");
+	}
+
+	fclose(arq);
 }
 
 //* ===================================== *//
@@ -110,12 +135,6 @@ void qtdColuna(TABELA * tab, unsigned short * lin, unsigned short * col){
 
 // Abre o arquivo CSV e o retorna 
 FILE* retornaArquivo(char *endereco, char *argumento){
-	FILE * arq;
-	arq = fopen(endereco, argumento);
-	if (!arq){
-		perror("Erro ao abrir arquivo");
-		exit(1);
-	}
-	
+	FILE * arq = fopen(endereco, argumento);
 	return arq;
 }

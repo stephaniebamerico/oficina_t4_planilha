@@ -5,8 +5,7 @@
 
 #include "table.h"
 
-#define TAMVALOR_MAX 255
-
+int arquivoValido(char* endereco);
 void leArquivoCSV(TABELA * tab, char* endereco);
 void escreveAquivoCSV(TABELA * tab, char* endereco);
 
