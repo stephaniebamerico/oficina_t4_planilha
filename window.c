@@ -118,23 +118,7 @@ void imprimeCursor(JANELA j, TABELA * tabela, int e){
 
 void imprimeAncora(JANELA j, TABELA * tabela){
 	int li, lf, ci, cf;
-	if(j.cursor.lin < j.ancora.lin){
-		li = j.cursor.lin;
-		lf = j.ancora.lin;
-	}
-	else{
-		li = j.ancora.lin;	
-		lf = j.cursor.lin;
-	}
-
-	if(j.cursor.col < j.ancora.col){
-		ci = j.cursor.col;
-		cf = j.ancora.col;
-	}
-	else{
-		ci = j.ancora.col;	
-		cf = j.cursor.col;
-	}
+	calculaAreaSelecionada(j, &li, &lf, &ci, &cf);
 
 	attron(COLOR_PAIR(COR_Black_Blue) | A_BOLD);
 		for (; li <= lf; ++li){
@@ -188,4 +172,24 @@ void imprimeFrase(char * f, int lin, int col, int cor){
 	attron(COLOR_PAIR(cor) | A_BOLD);
 		mvprintw(lin, col,f);
 	attroff(COLOR_PAIR(cor) | A_BOLD);
+}
+
+void calculaAreaSelecionada(JANELA j, int * li, int * lf, int * ci, int * cf){
+	if(j.cursor.lin < j.ancora.lin){
+		*li = j.cursor.lin;
+		*lf = j.ancora.lin;
+	}
+	else{
+		*li = j.ancora.lin;	
+		*lf = j.cursor.lin;
+	}
+
+	if(j.cursor.col < j.ancora.col){
+		*ci = j.cursor.col;
+		*cf = j.ancora.col;
+	}
+	else{
+		*ci = j.ancora.col;	
+		*cf = j.cursor.col;
+	}
 }

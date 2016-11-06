@@ -8,17 +8,28 @@
 void entr(int * e, int * cont);
 void insereNaString(unsigned char * t, int ch, int * cont);
 void alocaCopia(CELULA ***c);
-void copiaValores(TABELA * tab, CELULA ***c);
+void copiaValores(TABELA * tab, JANELA j, CELULA **c, COORDENADAS * area, int x);
+void colaValores(TABELA * tab, JANELA j, CELULA **c, COORDENADAS area);
 
 int main(int argc, char const *argv[]){
 	TABELA tabela;
 	JANELA j; 
 	CELULA **copia;
+	COORDENADAS area;
 	int ch, cont, e=0, r=0, s=0, a=0;
 	unsigned char t[255];
 	
 	alocaTabela(&tabela);
 	//alocaCopia(&copia);
+	copia = (CELULA **) malloc ((LIN_MAX+1)*sizeof(CELULA *));
+
+	if (copia == NULL){
+		perror("Erro ao alocar memoria");
+		exit(1);
+	}
+
+	for (int i = 0; i < LIN_MAX+1; ++i)
+		copia[i] = (CELULA *) malloc ((COL_MAX+1)*sizeof(CELULA));
 
 	char arq[255];
 	if(argc > 1){ 
@@ -45,6 +56,8 @@ int main(int argc, char const *argv[]){
 			imprimeFrase((char *) t, j.fin.lin-j.ini.lin, 22, j.cor + N_CORES);
 		}
 		//mvprintw(0, 0, "KEY NAME : %s - %d\n", keyname(ch),ch);
+//		mvprintw(j.fin.lin, j.fin.col, "AREA : %d - %d\n", area.lin, area.col);
+		//mvprintw(0, 0, "KEY NAME : %d - %d\n", area.lin, area.col);
 
 		atualizaTela(&j);
 
@@ -79,9 +92,24 @@ int main(int argc, char const *argv[]){
 				}		
 				break;
 			case CTRL_C:
+				if(!a){
+					j.ancora.lin = j.cursor.lin;
+					j.ancora.col = j.cursor.col;
+				}
+				copiaValores(&tabela, j, copia, &area, 0);
+				a=0;
+				break;
+			case CTRL_V:
 				if(!a)
-					strcpy((char *) t, tabela.celula[j.cursor.lin][j.cursor.col].valor);
-				
+					colaValores(&tabela, j, copia, area);
+				break;
+			case CTRL_X:
+				if(!a){
+					j.ancora.lin = j.cursor.lin;
+					j.ancora.col = j.cursor.col;
+				}
+				copiaValores(&tabela, j, copia, &area, 1);
+				a=0;
 				break;
 			case CTRL_R:
 				entr(&e, &cont);
@@ -176,13 +204,57 @@ void insereNaString(unsigned char * t, int ch, int * cont){
 }
 
 void alocaCopia(CELULA ***c){
-	*c = (CELULA **) malloc(LIN_MAX*sizeof(CELULA *));
+	*c = (CELULA **) malloc ((LIN_MAX+1)*sizeof(CELULA *));
 
-	for (int i = 0; i < COL_MAX; ++i){
-		*c[i] = malloc(COL_MAX*sizeof(CELULA));
+	if (*c == NULL){
+		perror("Erro ao alocar memoria");
+		exit(1);
+	}
+
+	for (int i = 0; i < LIN_MAX+1; ++i){
+		(*c)[i] = (CELULA *) malloc ((COL_MAX+1)*sizeof(CELULA));
 	}
 }
 
-void copiaValores(TABELA * tab, CELULA ***c){
-	printf("ok\n");
+void copiaValores(TABELA * tab, JANELA j, CELULA **c, COORDENADAS * area, int x){
+	int li, lf, ci, cf;
+	calculaAreaSelecionada(j, &li, &lf, &ci, &cf);
+	area->lin = lf - li;
+	area->col = cf - ci;
+	for (; li <= lf; ++li){
+		for (int i = ci; i <= cf; ++i){
+			if(tab->celula[li][i].valor != NULL){
+				if(c[li][i].valor == NULL)
+					c[li][i].valor = (char *) malloc(300);
+				strcpy(c[li][i].valor, tab->celula[li][i].valor);
+
+				if(x){
+					free(tab->celula[li][i].valor);
+					tab->celula[li][i].valor = NULL;
+				}
+			}
+			else{
+				if(c[li][i].valor != NULL)
+					free(c[li][i].valor);
+				c[li][i].valor = NULL;
+			}
+		}
+	}
+}
+
+void colaValores(TABELA * tab, JANELA j, CELULA **c, COORDENADAS area){
+	int li, ci;
+	li = j.cursor.lin;
+	ci = j.cursor.col;
+
+	for (int h=0; h <= area.lin; ++h){
+		for (int i=0; i <= area.col; ++i){
+			if(c[h][i].valor != NULL){
+				insereTabela(tab, (unsigned char *) c[h][i].valor, li+h, ci+i);
+			}
+			else{
+				tab->celula[li+h][ci+i].valor = NULL;
+			}
+		}
+	}
 }

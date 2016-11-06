@@ -17,6 +17,8 @@
 #define CTRL_Q 17
 #define CTRL_R 18
 #define CTRL_S 19
+#define CTRL_V 22
+#define CTRL_X 24
 
 #define COR_Red_Black 1
 #define COR_Green_Black 2
@@ -50,5 +52,6 @@ void imprimeTabela(JANELA j, TABELA * tabela, int e, int a);
 void atualizaTela(JANELA * j);
 void moveCursor(JANELA * j, int lin, int col);
 void imprimeFrase(char * f, int lin, int col, int cor);
+void calculaAreaSelecionada(JANELA j, int * li, int * lf, int * ci, int * cl);
 
 #endif
