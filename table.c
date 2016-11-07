@@ -35,25 +35,37 @@ void insereTabela(TABELA * tab, unsigned char *valor, unsigned short lin, unsign
 		perror("Erro ao alocar memoria");
 		exit(1);
 	}
-	
+
 	// define o tipo de valor
 	unsigned short tipo = FRASE;
-	if(valor[0] == '=')
-		tipo = FORMULA;
+	if(valor[0] == '='){
+		// verifica se tem chances de ser uma formula
+		// (ainda pode ser invalida)
+		int i;
+		for (i = 1; valor[i] != '\0' && valor[i] != '+' && valor[i] != '-' 
+					&& valor[i] != '*' && valor[i] != '/'; ++i);
+		if(valor[i] == '\0')
+			tipo = FRASE;
+		else{
+			int j;
+			for (j = i; valor[j] != '\0'; ++j);
+			if(j-i > 2 || (valor[i+1] >= '1' && valor[i+1] <= '9'))
+				tipo = FORMULA;
+			else
+				tipo = FRASE;
+		}
+	}
 	else if((valor[0] > '0' && valor[0] < '9') || valor[0] == '-')
 		tipo = INTEIRO;
 
 	// enquanto for inteiro ou decimal
-	for (int i = 1; valor[i] != '\0' && tipo != FRASE; ++i){
+	for (int i = 1; valor[i] != '\0' && tipo <= INTEIRO; ++i){
 		if(valor[i] == '.'){
 			if(tipo == INTEIRO)
 				tipo = DECIMAL;
-			// se for o segundo . ja nao pode ser decimal
-			else
-				tipo = FRASE;
 		}
 		// se nao for um numero
-		else if((valor[i] < '0' && valor[i] > '9') && tipo != FORMULA)
+		else if(valor[i] < '0' && valor[i] > '9')
 			tipo = FRASE;
 	}
 	// guarda o tipo e o valor na celula
@@ -77,4 +89,103 @@ void limpaValores(TABELA * tab){
 	}
 
 	tab->tlin = tab->tcol = 0;
+}
+
+void calculaFormula(TABELA * tab, unsigned short lin, unsigned short col, char temp[300]){
+	int i, achou=0, tipo;
+	// define a operacao e sua posicao no vetor
+	for(i=0; tab->celula[lin][col].valor[i] != '\0' && !achou; ++i){
+		switch(tab->celula[lin][col].valor[i]){
+			case '+':
+				achou = 1;
+				break;
+			case '-':
+				achou = 2;
+				break;
+			case '*':
+				achou = 3;
+				break;
+			case '/':
+				achou = 4;
+				break;
+		}
+	}
+	--i;
+	strcpy(temp, tab->celula[lin][col].valor);
+	// verifica se sao numeros ou referencias a celulas
+	tipo = INTEIRO;
+	int n1tipo=INTEIRO, n2tipo=INTEIRO;
+	for (int j = 1; temp[j] != '\0'; ++j){
+		if(temp[j] == '.')
+			tipo = DECIMAL;
+		else if(temp[j] >= 'A' && temp[j] <= 'Z'){
+			if(j < i)
+				n1tipo = FRASE;
+			else if (j > i)
+				n2tipo = FRASE;
+		}
+	}
+	// calcula o valor, seja numero ou celula
+	double n1, n2, r;
+	if(n1tipo == FRASE){
+		int c = temp[1]-'A';
+		int l=0;// = temp[2]-'1';
+		for (int k=2; k < i; ++k){
+			l=l*10+temp[k]-'1';
+		}
+		if(tab->celula[l][c].valor == NULL)
+			n1 = 0;
+		else{
+			n1 = atof(tab->celula[l][c].valor);
+		}
+	}
+	else{
+		n1 = atof(temp+1);
+	}
+	temp[i]='\0';
+	if(n2tipo == FRASE){
+		int c = temp[i+1]-'A';
+		int l=0;// = temp[i+2]-'1';
+		for (int k=i+2; temp[k] != '\0'; ++k){
+			l=l*10+temp[k]-'1';
+		}
+		if(tab->celula[l][c].valor == NULL)
+			n2 = 0;
+		else{
+			n2 = atof(tab->celula[l][c].valor);
+		}
+	}
+	else{
+		n2 = atof(temp+i+1);
+	}
+
+	// realiza a operacao
+	switch(achou){
+		case 1:
+			r = n1+n2;
+			break;
+		case 2:
+			r = n1-n2;
+			break;
+		case 3:
+			r = n1*n2;;
+			break;
+		case 4:
+			r = n1/n2;
+			break;
+	}
+	// verifica se o resultado e inteiro ou decimal
+	// (caso o calculo foi com celula)
+	if(tipo == INTEIRO){
+		long n = (long) r;
+		if(r - n > 0)
+			tipo = DECIMAL;
+	}
+	// formata a saida em string
+	if(tipo == INTEIRO){
+		sprintf(temp, "%ld", (long) r);
+	}
+	else{
+		sprintf(temp, "%lf", r);
+	}
 }

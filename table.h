@@ -29,6 +29,6 @@ typedef struct TABELA {
 void alocaTabela(TABELA * t);
 void insereTabela(TABELA * tab, unsigned char *valor, unsigned short lin, unsigned short col);
 void limpaValores(TABELA * tab);
-long calculaFormula(TABELA * tab, unsigned short lin, unsigned short col);
+void calculaFormula(TABELA * tab, unsigned short lin, unsigned short col, char temp[300]);
 
 #endif

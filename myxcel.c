@@ -55,9 +55,6 @@ int main(int argc, char const *argv[]){
 			imprimeFrase("ENTRE COM ARQUIVO: ", j.fin.lin-j.ini.lin, 3, j.cor + N_CORES);
 			imprimeFrase((char *) t, j.fin.lin-j.ini.lin, 22, j.cor + N_CORES);
 		}
-		//mvprintw(0, 0, "KEY NAME : %s - %d\n", keyname(ch),ch);
-//		mvprintw(j.fin.lin, j.fin.col, "AREA : %d - %d\n", area.lin, area.col);
-		//mvprintw(0, 0, "KEY NAME : %d - %d\n", area.lin, area.col);
 
 		atualizaTela(&j);
 
@@ -100,8 +97,8 @@ int main(int argc, char const *argv[]){
 				a=0;
 				break;
 			case CTRL_V:
-				if(!a)
-					colaValores(&tabela, j, copia, area);
+				colaValores(&tabela, j, copia, area);
+				a=0;
 				break;
 			case CTRL_X:
 				if(!a){
@@ -221,22 +218,22 @@ void copiaValores(TABELA * tab, JANELA j, CELULA **c, COORDENADAS * area, int x)
 	calculaAreaSelecionada(j, &li, &lf, &ci, &cf);
 	area->lin = lf - li;
 	area->col = cf - ci;
-	for (; li <= lf; ++li){
-		for (int i = ci; i <= cf; ++i){
-			if(tab->celula[li][i].valor != NULL){
-				if(c[li][i].valor == NULL)
-					c[li][i].valor = (char *) malloc(300);
-				strcpy(c[li][i].valor, tab->celula[li][i].valor);
+	for (int h=0; h <= area->lin; ++h){
+		for (int i = 0; i <= area->col; ++i){
+			if(tab->celula[li+h][ci+i].valor != NULL){
+				if(c[h][i].valor == NULL)
+					c[h][i].valor = (char *) malloc(300);
+				strcpy(c[h][i].valor, tab->celula[li+h][ci+i].valor);
 
 				if(x){
-					free(tab->celula[li][i].valor);
-					tab->celula[li][i].valor = NULL;
+					free(tab->celula[li+h][ci+i].valor);
+					tab->celula[li+h][ci+i].valor = NULL;
 				}
 			}
 			else{
-				if(c[li][i].valor != NULL)
-					free(c[li][i].valor);
-				c[li][i].valor = NULL;
+				if(c[h][i].valor != NULL)
+					free(c[h][i].valor);
+				c[h][i].valor = NULL;
 			}
 		}
 	}

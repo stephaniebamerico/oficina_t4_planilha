@@ -89,8 +89,15 @@ void imprimeTabela(JANELA j, TABELA * tabela, int e, int a){
 		for (int i = 0; i < j.fin.lin - j.ini.lin; ++i){
 			for (int k = 0; k < j.fin.col - j.ini.col; ++k){
 				if(tabela->celula[j.ini.lin+i][j.ini.col+k].valor != NULL){
-					mvprintw(i+1, k*LARG_CELULA + LARG_CELULA/2,
-					"%.5s", tabela->celula[j.ini.lin+i][j.ini.col+k].valor);
+					if(tabela->celula[j.ini.lin+i][j.ini.col+k].tipo != FORMULA){
+						mvprintw(i+1, k*LARG_CELULA + LARG_CELULA/2,
+						"%.5s", tabela->celula[j.ini.lin+i][j.ini.col+k].valor);
+					}else{
+						char t[300];
+						calculaFormula(tabela, j.ini.lin+i, j.ini.col+k, t);
+						mvprintw(i+1, k*LARG_CELULA + LARG_CELULA/2,
+						"%.5s", t);
+					}
 				}
 			}
 		}
