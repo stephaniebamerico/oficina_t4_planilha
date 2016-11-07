@@ -55,7 +55,7 @@ void insereTabela(TABELA * tab, unsigned char *valor, unsigned short lin, unsign
 				tipo = FRASE;
 		}
 	}
-	else if((valor[0] > '0' && valor[0] < '9') || valor[0] == '-')
+	else if((valor[0] >= '0' && valor[0] <= '9') || valor[0] == '-')
 		tipo = INTEIRO;
 
 	// enquanto for inteiro ou decimal
@@ -130,13 +130,21 @@ void calculaFormula(TABELA * tab, unsigned short lin, unsigned short col, char t
 	if(n1tipo == FRASE){
 		int c = temp[1]-'A';
 		int l=0;// = temp[2]-'1';
-		for (int k=2; k < i; ++k){
-			l=l*10+temp[k]-'1';
-		}
-		if(tab->celula[l][c].valor == NULL)
+		
+		l = atoi(temp+2)-1;
+		if(l > LIN_MAX || c > COL_MAX || l < 0 || c < 0
+			|| tab->celula[l][c].valor == NULL)
 			n1 = 0;
 		else{
-			n1 = atof(tab->celula[l][c].valor);
+			if(tab->celula[l][c].tipo == FORMULA){
+				char t[300];
+				calculaFormula(tab, l, c, t);
+				n1 = atof(t);
+			}
+			else if(tab->celula[l][c].tipo == INTEIRO || tab->celula[l][c].tipo == DECIMAL)
+				n1 = atof(tab->celula[l][c].valor);
+			else
+				n1=0;
 		}
 	}
 	else{
@@ -146,13 +154,21 @@ void calculaFormula(TABELA * tab, unsigned short lin, unsigned short col, char t
 	if(n2tipo == FRASE){
 		int c = temp[i+1]-'A';
 		int l=0;// = temp[i+2]-'1';
-		for (int k=i+2; temp[k] != '\0'; ++k){
-			l=l*10+temp[k]-'1';
-		}
-		if(tab->celula[l][c].valor == NULL)
+
+		l = atoi(temp+i+2)-1;
+		if(l > LIN_MAX || c > COL_MAX || l < 0 || c < 0
+			|| tab->celula[l][c].valor == NULL)
 			n2 = 0;
 		else{
-			n2 = atof(tab->celula[l][c].valor);
+			if(tab->celula[l][c].tipo == FORMULA){
+				char t[300];
+				calculaFormula(tab, l, c, t);
+				n2 = atof(t);
+			}
+			else if(tab->celula[l][c].tipo == INTEIRO || tab->celula[l][c].tipo == DECIMAL)
+				n2 = atof(tab->celula[l][c].valor);
+			else
+				n2=0;
 		}
 	}
 	else{
