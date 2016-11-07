@@ -181,9 +181,22 @@ int main(int argc, char const *argv[]){
 				}
 				break;
 		}			
-	}			
-	encerraJanela();
+	}
 
+	encerraJanela();
+	liberaTabela(&tabela);
+	if (copia != NULL){
+		for (int i = 0; i < LIN_MAX+1; ++i){
+			if(copia[i] != NULL){
+				for (int j = 0; j < COL_MAX+1; ++j){			
+					if(copia[i][j].valor != NULL)
+						free(copia[i][j].valor);
+				}
+				free(copia[i]);
+			}
+		}
+		free(copia);
+	}
 	return 0;
 }
 

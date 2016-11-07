@@ -30,5 +30,5 @@ void alocaTabela(TABELA * t);
 void insereTabela(TABELA * tab, unsigned char *valor, unsigned short lin, unsigned short col);
 void limpaValores(TABELA * tab);
 void calculaFormula(TABELA * tab, unsigned short lin, unsigned short col, char temp[300]);
-
+void liberaTabela(TABELA * t);
 #endif

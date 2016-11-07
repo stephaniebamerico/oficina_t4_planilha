@@ -12,8 +12,10 @@ void qtdColuna(TABELA * tab, unsigned short * lin, unsigned short * col);
 // Verifica se o arquivo e valido
 int arquivoValido(char* endereco){
 	FILE * arq = fopen(endereco, "r");	
-	if(arq)
+	if(arq){
+		fclose(arq);
 		return 1;
+	}
 	return 0;
 }
 

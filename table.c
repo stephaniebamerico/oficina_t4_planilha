@@ -20,6 +20,23 @@ void alocaTabela(TABELA * t){
 	t->tlin = t->tcol = 0;
 }
 
+void liberaTabela(TABELA * t){
+	if (t->celula == NULL){
+		return;
+	}
+
+	for (int i = 0; i < LIN_MAX+1; ++i){
+		if(t->celula[i] != NULL){
+			for (int j = 0; j < COL_MAX+1; ++j){			
+				if(t->celula[i][j].valor != NULL)
+					free(t->celula[i][j].valor);
+			}
+			free(t->celula[i]);
+		}
+	}
+	free(t->celula);
+}
+
 /** O objectivo desta funcao 'e receber os valores da celula,
 	determinar o tipo do valor e inseri-los na tabela **/
 void insereTabela(TABELA * tab, unsigned char *valor, unsigned short lin, unsigned short col){
